@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package tutorial;
+
+option java_multiple_files = true;
+option java_outer_classname = "KafkaMessageSample";
+
+message KafkaMessage {
+  string id = 1;
+
+
+  enum RequestType {
+    RESPONSE = 0;
+    NOTIFY = 1;
+    REQUEST = 3;
+  }
+
+  enum MethodType{
+    CREAT = 0;
+    GET = 1;
+    UPDATE = 2;
+    DELETE = 3;
+  }
+  RequestType request_type = 2;
+  MethodType methos_type = 3;
+  string body = 4;
+  string reply_to = 5;
+
+}

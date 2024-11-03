@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/book_db
+    username: postgres
+    password: 1234
+    # по умолчанию пароль тоже постгрес
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      auto-offset-reset: earliest
+      enable-auto-commit: true
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+    logging:
+      level:
+        root: INFO               # Уровень логирования для корневого логгера
+        org.hibernate.SQL: DEBUG  # Логирование SQL-запросов
+        org.hibernate.type: TRACE  # Логирование типов данных
+
