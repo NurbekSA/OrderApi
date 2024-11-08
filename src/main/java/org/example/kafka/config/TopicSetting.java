@@ -21,15 +21,15 @@ public class TopicSetting {
         Properties props = new Properties();
         props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
 
+
+
         // Создание AdminClient для управления топиками
         try (AdminClient adminClient = AdminClient.create(props)) {
-            // Создаем новый топик с 3 разделами и фактором репликации 1
-            NewTopic newPaymentTopic = new NewTopic("payment-topic", 2, (short) 1);
-            NewTopic newInvestmentTopic = new NewTopic("investment-topic", 1, (short) 1);
 
             // Создание топика в Kafka
-            adminClient.createTopics(Collections.singletonList(newPaymentTopic));
-            adminClient.createTopics(Collections.singletonList(newInvestmentTopic));
+            adminClient.createTopics(Collections.singletonList(new NewTopic("amanzat.order-api.response", 4, (short) 1)));
+            adminClient.createTopics(Collections.singletonList(new NewTopic("amanzat.box-api.request.block-get-cost", 1, (short) 1)));
+            adminClient.createTopics(Collections.singletonList(new NewTopic("amanzat.box-api.get-cost", 1, (short) 1)));
             System.out.println("Топик создан успешно!");
         } catch (Exception e) {
             System.err.println("Ошибка при создании топика: " + e.getMessage());

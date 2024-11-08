@@ -1,71 +1,57 @@
 package org.example.kafka;
 
+
+
 import com.google.protobuf.InvalidProtocolBufferException;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
+import lombok.RequiredArgsConstructor;
 import org.example.kafka.proto.tutorial.KafkaMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.listener.MessageListener;
-import org.springframework.kafka.listener.MessageListenerContainer;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-public class KafkaRequestReply {
+@RequiredArgsConstructor
+public class KafkaRequestReply{
+    private final KafkaTemplate<String, byte[]> kafkaTemplate;
+    private final ConcurrentHashMap<String, CompletableFuture<KafkaMessage>> pendingRequests = new ConcurrentHashMap<>();
 
-    @Autowired
-    private KafkaTemplate<String, byte[]> kafkaTemplate;
-
-    @Autowired
-    private KafkaListenerEndpointRegistry registry;
 
     public CompletableFuture<KafkaMessage> sendRequest(String data, String requestTopic, String responseTopic) {
         String requestId = UUID.randomUUID().toString();
         CompletableFuture<KafkaMessage> futureResponse = new CompletableFuture<>();
+        pendingRequests.put(requestId, futureResponse);
 
-        MessageListenerContainer container = registry.getListenerContainer("responseListener");
-        if (container != null && !container.isRunning()) {
-            container.start();
-        }
-
-        container.setupMessageListener((MessageListener<String, byte[]>) message -> {
-            try {
-                KafkaMessage kafkaMessage = KafkaMessage.parseFrom(message.value());
-                if (kafkaMessage.getId().equals(requestId)) {
-                    futureResponse.complete(kafkaMessage);
-                    container.stop();
-                }
-            } catch (InvalidProtocolBufferException e) {
-                futureResponse.completeExceptionally(e);
-            }
-        });
-
+        // Создание и отправка сообщения
         KafkaMessage requestMessage = KafkaMessage.newBuilder()
-                .setId(requestId)
+                .setCorrelationId(requestId)
                 .setRequestType(KafkaMessage.RequestType.REQUEST)
-                .setMethosType(KafkaMessage.MethodType.GET)
                 .setBody(data)
                 .setReplyTo(responseTopic)
                 .build();
 
-        byte[] messageBytes = requestMessage.toByteArray();
-        kafkaTemplate.send(requestTopic, messageBytes);
+        kafkaTemplate.send(requestTopic, requestMessage.toByteArray());
 
+        // Возвращаем future, который завершится при получении ответа
         return futureResponse;
     }
 
-    // Новый метод для прослушивания топика investment-topic
-    @KafkaListener(id = "investment-topic", topics = "investment-topic")
-    public void listenInvestmentTopic(ConsumerRecord<String, byte[]> record) {
+    @KafkaListener(topics = "amanzat.order-api.response", groupId = "shared-listener-group")
+    public void listen(byte[] messageBytes) {
         try {
-            KafkaMessage kafkaMessage = KafkaMessage.parseFrom(record.value());
-            System.out.println("Получено сообщение из investment-topic: " + kafkaMessage);
-            // Здесь вы можете добавить логику обработки сообщений из investment-topic
+            KafkaMessage kafkaMessage = KafkaMessage.parseFrom(messageBytes);
+            String requestId = kafkaMessage.getCorrelationId();
+
+            // Завершение future и удаление из карты ожидания
+            CompletableFuture<KafkaMessage> futureResponse = pendingRequests.remove(requestId);
+            if (futureResponse != null) {
+                futureResponse.complete(kafkaMessage);
+            }
         } catch (InvalidProtocolBufferException e) {
+            // Обработка ошибки
             e.printStackTrace();
         }
     }

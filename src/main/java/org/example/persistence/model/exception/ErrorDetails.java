@@ -1,4 +1,4 @@
-package org.example.entity.model.exception;
+package org.example.persistence.model.exception;
 
 
 import java.util.Date;

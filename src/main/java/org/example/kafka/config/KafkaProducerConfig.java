@@ -36,12 +36,4 @@ public class KafkaProducerConfig {
         return new KafkaTemplate<>(producerFactory());
     }
 
-//    @Bean
-//    public NewTopic createTopic() {
-//        return new NewTopic("your-topic-name", 1, (short) 1); // Замените на ваши параметры
-//    }
-//    @Bean
-//    public KafkaTemplate<String, String> kafkaTemplate() {
-//        return new KafkaTemplate<>(producerFactory());
-//    }
 }

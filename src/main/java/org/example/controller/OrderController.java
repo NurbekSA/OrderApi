@@ -1,15 +1,18 @@
 package org.example.controller;
 
-
-import org.example.entity.model.OrderModel;
-import org.example.entity.service.OrderService;
+import jakarta.validation.Valid;
+import org.example.persistence.model.dto.OrderDTO;
+import org.example.persistence.model.Transfer;
+import org.example.persistence.service.OrderService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/order")
+@Validated
 public class OrderController {
 
     private final OrderService orderService;
@@ -19,27 +22,27 @@ public class OrderController {
     }
 
     @GetMapping("/user/{userId}")
-    public OrderModel getOrderByUserId(@PathVariable String userId) {
+    public OrderDTO getOrderByUserId(@PathVariable String userId) {
         return orderService.getByUserId(userId);
     }
 
     @GetMapping("/box/{boxId}")
-    public OrderModel getOrderByBoxId(@PathVariable String boxId) {
+    public OrderDTO getOrderByBoxId(@PathVariable String boxId) {
         return orderService.getByBoxId(boxId);
     }
 
     @GetMapping
-    public List<OrderModel> getAllOrders() {
+    public List<OrderDTO> getAllOrders() {
         return orderService.findAll();
     }
 
     @PostMapping
-        public OrderModel createOrder(@RequestBody OrderModel order, @RequestParam String credential) {
-        return orderService.create(order, credential);
+    public OrderDTO createOrder(@RequestBody @Validated(Transfer.Create.class) OrderDTO order) {
+        return orderService.create(order);
     }
 
     @PutMapping("/extend")
-    public OrderModel extendOrder(@RequestBody OrderModel order) {
+    public OrderDTO extendOrder(@RequestBody @Validated(Transfer.Extend.class) OrderDTO order) {
         return orderService.extend(order);
     }
 

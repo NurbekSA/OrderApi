@@ -4,6 +4,11 @@
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %highlight(%-5level){
+                ERROR=red bold, WARN=yellow bold, INFO=green, DEBUG=blue, TRACE=cyan
+                } %logger{36} - %msg%n</pattern>
+        </encoder>
     </appender>
     <root level="info">
         <appender-ref ref="CONSOLE" />

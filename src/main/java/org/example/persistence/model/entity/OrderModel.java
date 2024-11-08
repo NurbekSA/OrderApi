@@ -1,4 +1,4 @@
-package org.example.entity.model;
+package org.example.persistence.model.entity;
 
 
 import jakarta.persistence.Entity;
@@ -7,8 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.math.BigDecimal;
 
 @Entity
 @Setter
@@ -21,8 +19,10 @@ public class OrderModel {
     private String id;
     private String userId;
     private String boxId;
+
     private Boolean isPaid; // (оплачено/не оплачено)
     private Boolean isAlive; // Логическое удаление
+
     private Long bookingDateTime;
     private int rentalPeriod;
     private Double summ;

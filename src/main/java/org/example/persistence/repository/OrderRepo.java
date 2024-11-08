@@ -1,6 +1,6 @@
-package org.example.entity.repository;
+package org.example.persistence.repository;
 
-import org.example.entity.model.OrderModel;
+import org.example.persistence.model.entity.OrderModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

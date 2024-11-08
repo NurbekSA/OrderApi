@@ -1,19 +1,27 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/book_db
-    username: postgres
-    password: 1234
-    # по умолчанию пароль тоже постгрес
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:h2:file:./data/demo
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
   jpa:
     hibernate:
-      ddl-auto: update
-    database: postgresql
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+      ddl-auto: none  # Отключаем автоматическое управление схемой
     show-sql: true
     properties:
       hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
+    open-in-view: false
+
+  liquibase:
+    enabled: true  # Включаем  Liquibase для управления миграциями
+    change-log: classpath:/db/changelog/db.changelog-master.xml
+
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
@@ -21,13 +29,15 @@ spring:
       enable-auto-commit: true
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
-
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
-    logging:
-      level:
-        root: INFO               # Уровень логирования для корневого логгера
-        org.hibernate.SQL: DEBUG  # Логирование SQL-запросов
-        org.hibernate.type: TRACE  # Логирование типов данных
 
+logging:
+  level:
+    root: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type: TRACE
+
+server:
+  port: 8080

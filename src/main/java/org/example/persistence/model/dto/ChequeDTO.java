@@ -1,22 +1,19 @@
-package org.example.entity.model;
+package org.example.persistence.model.dto;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
-@Setter
 @Getter
+@Setter
 @AllArgsConstructor
-public class ChequeModel {
-
-    @Id
+@NoArgsConstructor
+public class ChequeDTO {
     private String id;
+    @NotNull
     private String orderId;
+    @NotNull
     private String body;
-
-
 }
