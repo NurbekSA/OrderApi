@@ -2,3 +2,7 @@
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Таблица "DATABASECHANGELOGLOCK" не найдена
 Table "DATABASECHANGELOGLOCK" not found; SQL statement:
 SELECT COUNT(*) FROM PUBLIC.DATABASECHANGELOGLOCK [42102-232]
+2024-11-08 17:10:53.706923+05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Таблица "ORDER_MODEL" уже существует
+Table "ORDER_MODEL" already exists; SQL statement:
+CREATE TABLE PUBLIC.order_model (id VARCHAR(255) NOT NULL, user_id VARCHAR(255) NOT NULL, box_id VARCHAR(255) NOT NULL, is_paid BOOLEAN NOT NULL, is_alive BOOLEAN NOT NULL, booking_date_time BIGINT NOT NULL, rental_period INT NOT NULL, summ DOUBLE PRECISION NOT NULL, item_category VARCHAR(255) NOT NULL, CONSTRAINT PK_ORDER_MODEL PRIMARY KEY (id)) [42101-232]
